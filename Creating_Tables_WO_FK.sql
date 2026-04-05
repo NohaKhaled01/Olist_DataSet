@@ -41,11 +41,10 @@ PRIMARY KEY (seller_id)
 
 CREATE TABLE geolocation (
 geolocation_zip_code_prefix CHAR(5),
-geolocation_lat DECIMAL(17,13),
-geolocation_lng DECIMAL(17,13),
+geolocation_lat DECIMAL(15,13),
+geolocation_lng DECIMAL(15,13),
 geolocation_city VARCHAR(38),
-geolocation_state CHAR(2),
-PRIMARY KEY (geolocation_lat, geolocation_lng)
+geolocation_state CHAR(2)
 )
 ;
 
@@ -53,11 +52,11 @@ CREATE TABLE orders(
 order_id CHAR(32),
 customer_id CHAR(32),
 order_status VARCHAR(20),
-order_purchase_timestamp DATETIME,
-order_approved_at DATETIME,
-order_delivered_carrier_date DATETIME,
-order_delivered_customer_date DATETIME,
-order_estimated_delivery_date DATETIME,
+order_purchase_timestamp VARCHAR(30),
+order_approved_at VARCHAR(30),
+order_delivered_carrier_date VARCHAR(30),
+order_delivered_customer_date VARCHAR(30),
+order_estimated_delivery_date VARCHAR(30),
 PRIMARY KEY (order_id)
 )
 ;
@@ -90,11 +89,13 @@ order_id CHAR(32),
 review_score TINYINT UNSIGNED,
 review_comment_title VARCHAR(500),
 review_comment_message TEXT,
-review_creation_date DATETIME,
-review_answer_timestamp DATETIME,
-PRIMARY KEY (review_id)
+review_creation_date VARCHAR(30),
+review_answer_timestamp VARCHAR(30),
+PRIMARY KEY (review_id, order_id)
 )
 ;
+
+
 
 
 
