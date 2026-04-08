@@ -1,0 +1,144 @@
+Tables and the data inside them:
+
+
+Table: olist_customers_dataset:
+Columns:
+customer_id
+customer_unique_id
+customer_zip_code_prefix
+customer_city	
+customer_state
+
+Contains data about customers registered on the olist ecommerce platform
+customer_id is used for orders .. a new id is generated for each order
+customer unique id is the actual user's ID
+Three orders made by the same user will have three different customer IDs, but the same customer unique ID
+
+records in table: 99441
+number of users [distinct customer unique ids]: 96096
+
+Most customers are in the state SP - Sao Paulo
+Least customers are in the state RR - Roraima
+Each state contains cities inside it 
+Highest customer counts are in the cities: sao paulo and rio de janeiro
+
+Would be nice to know the percentage of orders to customer count in each city,
+Perhaps cities that have lower customer count have highest number of orders per customer versus the higher customer count cities.
+
+no nulls or short zip codes/cities/ids - no issues were found on importing the table.
+
+customer cities could have misspellings counting as different cities .. will need processing in python later, cant do it with sql.
+will be very tricky - not sure if worth it .. to be defined based on what we need to find 
+----
+Table: olist_geolocation_dataset
+Columns:
+geolocation_zip_code_prefix
+geolocation_lat	
+geolocation_lng	
+geolocation_city	
+geolocation_state
+
+Contains data for the zip codes, and their lat ang lng, city and state
+each zip code can have multiple lat and lng, and be in the same city and state
+
+I dont see a use for it yet .. 
+Table was imported without a PK - no combination worked
+records: 1000163
+----
+Table: olist_order_items_dataset
+Columns:
+order_id	
+order_item_id	
+product_id	
+seller_id	
+shipping_limit_date	
+price	
+freight_value
+
+Contains data for the orders, each with its own order id
+Each order has the product id, and the seller id. Plus the price, and the shipping cost [freight value]
+The order item id designates the number of items in an order. 
+The same order id can be repeated, with the order item id going from 1 to the number of items in that order
+Highest number of items in one order = 21 
+
+Worth noting: if an order contains multiple orders for the same product from the same seller,
+the shown shipping value is per each item in the order .. which i think is a mispresentation.
+if i need to calculate the shipping costs, i need to group the product and seller ids per order before i do that.
+
+Shipping limit date -- not sure if this is the deadline for the seller to hand the order to the carrier, or it is the actual shipping date.
+Needs to be compared to the date columns in the orders table to determine this.
+
+Possible insights from this table:
+avg of items per order 
+which orders have highest price [higher profits] -- more quantity, or less quantity more expensive items?
+comparing shipping limit date to the dates in the order file to get a picture of the times taken for deliveries.
+
+Records: 112650
+Number of orders: 98666 [distinct order ids]
+----
+Table:olist_order_payments_dataset
+Columns:
+order_id	
+payment_sequential	
+payment_type	
+payment_installments	
+payment_value
+
+Contains data for the payment for the orders
+Each order has its id which can be connected to the order item tables to get info on the order itself
+Each order id can be paid for in one go, or on multiple times - payment sequential column.
+Payment installments is valid for credit card only .. all the other types have only one installment
+
+There are three orders with undefined payment type .. and no items in the order items table
+Will need to delete those ids from all the tables
+
+Possible insights from this table:
+The usage frequency of each payment type.
+A look into the payment installments of credit card payments.
+How often do orders get paid with multiple methods at the same time [payment sequential > 1]. 
+Could be an indication of inability to pay the full order using one method -- look into the total order price of those orders.
+Also look at the payment methods combinations .. what was used with what.
+
+Records: 103886
+Number of orders [distinct order ids -- should be same as in the items table?]: 99440 -- why? lol. Needs more investigation.
+----
+Table: olist_order_reviews_dataset
+Columns:
+review_id	
+order_id	
+review_score	
+review_comment_title	
+review_comment_message	
+review_creation_date	
+review_answer_timestamp
+
+Contains data for the reviews for orders. 
+Each review has its own id, + the order id for the review.
+Doesn't specify which item in the order was reviewed tho.
+Contains also review score - 1 to 5
+Optional - review comment title - review comment message.
+Two date columns - creation date, and answer timestamp.
+My guess is - the creation date is created by the website itself for the user - they are all created at 12 am. 
+Is this on the day after the delivery day?
+Answer timestamp is when the user submitted the review.
+
+Possible insights from this table:
+Time taken for users to submit reviews
+Is this time related to the score? 
+
+I am not sure I can do anything with the title and message since they are in spanish.
+
+Number of records: [expected to be lower than the order id - not everyone would submit a review] 99224
+This is higher than the number of orders in the items table actually.
+But pending comparison with the orders table.
+----
+Table: olist_orders_dataset -- Stopped here.
+Columns:
+order_id	
+customer_id	
+order_status	
+order_purchase_timestamp	
+order_approved_at	
+order_delivered_carrier_date	
+order_delivered_customer_date	
+order_estimated_delivery_date
