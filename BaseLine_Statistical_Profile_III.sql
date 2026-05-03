@@ -32,9 +32,70 @@ SELECT
     COUNT(*) - COUNT(order_estimated_delivery_date) as null_count
 FROM orders
 ;
+
+SELECT DISTINCT order_status
+FROM orders
+;
 # Notes:
+	# No null rows.
+    # Total number of rows = 99441
+    # Order statuses: Delivered - Unavaiable - Shipped - Canceled - Invoiced - Processing - Approved - Created
+    # What is unavailable? lol - not sure [exploring below]:
+
+SELECT COUNT(*)
+from orders
+WHERE order_status = 'unavailable'
+; #609 unavailable orders in orders table
+
+SELECT COUNT(*), COUNT(DISTINCT order_id)
+FROM order_items
+WHERE order_id IN 
+(
+	SELECT order_id
+	from orders
+	WHERE order_status = 'unavailable'
+)
+; 
+# Notes:
+	# 7 unavailable order id in order_items table - 6 distinct order ids [6 different orders]
+	# What about the rest of the 609? they dont have enteries in the items table. 
+
+SELECT COUNT(*), COUNT(DISTINCT order_id)
+FROM order_payments
+WHERE order_id IN 
+(
+	SELECT order_id
+	from orders
+	WHERE order_status = 'unavailable'
+)
+;
+
+SELECT *
+FROM order_payments
+WHERE order_id IN 
+(
+	SELECT order_id
+	from orders
+	WHERE order_status = 'unavailable'
+)
+;
+# Notes:
+	# 649 unavailable order id in order_payments table - 609 distinct order ids [609 orders .. similar to the orders table]
+    # All the orders have payment data.
+    # Not possible to check if these orders had any refunds. 
+--
 	# Insights I wanted to derive from these values:
-		# Gap between review creation date, and review answer timestamp -- and does it change with the review score?
-        # Is the review request sent the day after the delivery?
-        # Does the comment length vary with the review score?
-        # What % of reviews have comments?
+		# Does the time between purchase time and approval time  change with payment methods? [join to orders payments table]
+        # Gap between estimated delivery date and actual delivery date - could give a sneak peak into the margin Olist give themselves. 
+			# Follow up questions for this point:
+				# Is estimated - approved always fixed? If no, what affects its change? Number of items? Number of sellers?
+				# What does the actual delivery look like versus the estimated? More often on time than late, or vice versa?
+				# Reviews for late deliveries - if any.
+                
+        
+SELECT *
+FROM orders
+;
+        
+
+
