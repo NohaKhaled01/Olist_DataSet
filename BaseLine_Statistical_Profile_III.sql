@@ -256,3 +256,38 @@ WHERE order_id IN (
     # Categories versus orders - which categories have the highest demand?
     # Categories with highest and lowest review scores - find if there is a relationship there.
     
+    
+# 5. Sellers Table:
+
+SELECT *
+FROM sellers
+;
+
+SELECT
+	COUNT(*) as total_records,
+    COUNT(seller_id) - COUNT(*) as null_records,
+    COUNT(seller_zip_code_prefix) - COUNT(*) as null_records,
+    COUNT(DISTINCT seller_city),
+    COUNT(DISTINCT seller_state)
+FROM sellers
+; 
+# Notes:
+	# 3095 sellers. No Nulls.
+    # Divided across 23 states and 610 cities.
+
+SELECT seller_state, seller_city, COUNT(seller_id) as sellers_in_city
+FROM sellers
+GROUP BY seller_state, seller_city
+ORDER BY COUNT(seller_id) DESC
+; # To show the states and cities with the highest seller count -- Sao Paulo leads by a very big difference.
+
+# Insights I wanted to derive from this table:
+	# Seller geographical distribution — which states and cities have the most sellers?
+    # Number of orders per seller — are a small number of sellers driving most of the volume?
+    # Seller location vs customer location — which state-to-state routes have the longest delivery times? Could tell Olist where to recruit more sellers.
+    # Reviews for sellers with more products — does product count relate to review score or delivery speed?
+
+
+
+
+
