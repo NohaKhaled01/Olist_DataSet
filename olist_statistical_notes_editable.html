@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olist Exploration Notes</title>
+<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --bg-sec: #f5f5f3;
+  --bg-info: #e6f1fb;
+  --bg-success: #eaf3de;
+  --bg-warning: #faeeda;
+  --bg-danger: #fcebeb;
+  --text: #1a1a18;
+  --text-sec: #5f5e5a;
+  --text-ter: #888780;
+  --text-info: #185fa5;
+  --text-success: #3b6d11;
+  --text-warning: #854f0b;
+  --text-danger: #a32d2d;
+  --border: rgba(0,0,0,0.12);
+  --border-strong: rgba(0,0,0,0.22);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1c;
+    --bg-sec: #2a2a28;
+    --bg-info: #0c447c;
+    --bg-success: #27500a;
+    --bg-warning: #633806;
+    --bg-danger: #791f1f;
+    --text: #f0ede8;
+    --text-sec: #b4b2a9;
+    --text-ter: #888780;
+    --text-info: #85b7eb;
+    --text-success: #97c459;
+    --text-warning: #ef9f27;
+    --text-danger: #f09595;
+    --border: rgba(255,255,255,0.1);
+    --border-strong: rgba(255,255,255,0.22);
+  }
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-sec);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+}
+
+.notepad { max-width: 780px; margin: 0 auto; }
+
+.top-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.top-bar h1 {
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.top-bar p { font-size: 13px; color: var(--text-sec); }
+
+.top-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.btn {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text-sec);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.12s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg-sec); color: var(--text); }
+.btn i { font-size: 14px; }
+.btn-primary { background: var(--bg-info); color: var(--text-info); border-color: transparent; }
+.btn-primary:hover { opacity: 0.85; background: var(--bg-info); }
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+  border-bottom: 0.5px solid var(--border);
+  padding-bottom: 10px;
+  align-items: center;
+}
+
+.tab {
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-sec);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tab:hover { background: var(--bg-sec); color: var(--text); }
+.tab.active { background: var(--bg-info); color: var(--text-info); border-color: transparent; font-weight: 500; }
+.tab-del {
+  font-size: 11px;
+  opacity: 0;
+  margin-left: 2px;
+  pointer-events: none;
+}
+.tab:hover .tab-del { opacity: 0.5; pointer-events: all; }
+.tab-del:hover { opacity: 1 !important; color: var(--text-danger); }
+
+.add-tab-btn {
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  border: 0.5px dashed var(--border-strong);
+  background: transparent;
+  color: var(--text-ter);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.12s;
+}
+.add-tab-btn:hover { background: var(--bg-sec); color: var(--text); border-style: solid; }
+
+.section { display: none; }
+.section.visible { display: block; }
+
+.block {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.block-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-sec);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.block-title i { font-size: 14px; }
+
+.block-actions { display: flex; gap: 6px; }
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-ter);
+  font-size: 14px;
+  padding: 3px 5px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  font-family: var(--font);
+  transition: all 0.12s;
+}
+.icon-btn:hover { background: var(--bg-sec); color: var(--text); }
+.icon-btn.danger:hover { background: var(--bg-danger); color: var(--text-danger); }
+
+.note-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+.note-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  group: true;
+}
+
+.note-bullet {
+  color: var(--text-ter);
+  font-size: 13px;
+  padding-top: 2px;
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.note-text {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.55;
+  flex: 1;
+  min-width: 0;
+  cursor: text;
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin: -1px -4px;
+  transition: background 0.1s;
+  word-break: break-word;
+}
+.note-text:hover { background: var(--bg-sec); }
+.note-text:focus {
+  outline: none;
+  background: var(--bg-sec);
+  box-shadow: 0 0 0 2px rgba(23,95,165,0.2);
+}
+
+.note-text.sub-note { color: var(--text-sec); font-size: 13px; }
+
+.note-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.note-item:hover .note-actions { opacity: 1; }
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  margin-left: 4px;
+  vertical-align: middle;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font);
+}
+.tag-fixed { background: var(--bg-success); color: var(--text-success); }
+.tag-insight { background: var(--bg-info); color: var(--text-info); }
+.tag-open { background: var(--bg-warning); color: var(--text-warning); }
+
+.stat-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.stat {
+  background: var(--bg-sec);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--text-sec);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stat-val {
+  font-weight: 500;
+  color: var(--text);
+  cursor: text;
+  min-width: 4px;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+.stat-val:focus { outline: none; background: var(--bg); box-shadow: 0 0 0 2px rgba(23,95,165,0.2); }
+.stat-label {
+  cursor: text;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+.stat-label:focus { outline: none; background: var(--bg); box-shadow: 0 0 0 2px rgba(23,95,165,0.2); }
+
+.add-note-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 0.5px dashed var(--border);
+  display: flex;
+  gap: 6px;
+}
+
+.add-note-input {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  background: var(--bg-sec);
+  color: var(--text);
+  outline: none;
+}
+.add-note-input:focus { border-color: var(--text-info); box-shadow: 0 0 0 2px rgba(23,95,165,0.15); }
+.add-note-input::placeholder { color: var(--text-ter); }
+
+.add-stat-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 0.5px dashed var(--border);
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.add-stat-input {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  background: var(--bg-sec);
+  color: var(--text);
+  outline: none;
+  width: 160px;
+}
+.add-stat-input:focus { border-color: var(--text-info); box-shadow: 0 0 0 2px rgba(23,95,165,0.15); }
+.add-stat-input::placeholder { color: var(--text-ter); }
+
+.add-block-row {
+  border: 0.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 12px 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.add-block-input {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  background: var(--bg-sec);
+  color: var(--text);
+  outline: none;
+}
+.add-block-input:focus { border-color: var(--text-info); }
+.add-block-input::placeholder { color: var(--text-ter); }
+
+.block-type-select {
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  background: var(--bg-sec);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.saved-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text-success);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.2s;
+  pointer-events: none;
+  z-index: 100;
+}
+.saved-toast.show { opacity: 1; transform: translateY(0); }
+
+.block-title-editable {
+  cursor: text;
+  border-radius: 3px;
+  padding: 0 3px;
+  margin-left: -3px;
+}
+.block-title-editable:focus { outline: none; background: var(--bg-sec); }
+</style>
+</head>
+<body>
+<div class="notepad">
+  <div class="top-bar">
+    <div>
+      <h1>Olist exploration notes</h1>
+      <p>Baseline statistical profile — click any text to edit</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn" onclick="exportHTML()" title="Download updated file">
+        <i class="ti ti-download" aria-hidden="true"></i> Download
+      </button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div id="sections"></div>
+</div>
+
+<div class="saved-toast" id="toast">
+  <i class="ti ti-check" aria-hidden="true"></i> Saved
+</div>
+
+<script>
+const STORAGE_KEY = 'olist_notes_v1';
+
+const defaultData = {
+  tabs: [
+    { id: 'order_items', label: 'Order items' },
+    { id: 'order_payments', label: 'Order payments' },
+    { id: 'order_reviews', label: 'Order reviews' },
+    { id: 'orders', label: 'Orders' },
+    { id: 'products', label: 'Products' },
+    { id: 'sellers', label: 'Sellers' }
+  ],
+  activeTab: 'order_items',
+  sections: {
+    order_items: {
+      blocks: [
+        { id: 'b1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+          { label: 'Total rows', val: '112,650' },
+          { label: 'Distinct orders', val: '98,666' },
+          { label: 'Null prices', val: '0' },
+          { label: 'Zero-freight orders', val: '339' }
+        ]},
+        { id: 'b2', type: 'notes', title: 'Price distribution', icon: 'ti-tag', notes: [
+          { text: 'CV = 1.5 — prices are widely scattered around the mean', sub: false },
+          { text: 'Most repeated price: 59.90 BRL, appearing 2,481 times (~2.2%)', sub: false },
+          { text: 'Highest item counts in orders are for prices below 50 BRL', sub: false },
+          { text: 'First sharp drop in order frequency between 100–150 and 150–200 BRL', sub: false },
+          { text: 'Second drop between 150–200 and 200–250 BRL; generally, higher price = less frequent', sub: false }
+        ]},
+        { id: 'b3', type: 'notes', title: 'Freight distribution', icon: 'ti-truck', notes: [
+          { text: 'CV = 0.79 — less scattered than prices', sub: false },
+          { text: 'Minimum freight = 0.00 BRL; 383 products and 339 orders have zero delivery fees', sub: false },
+          { text: 'Great majority of delivery costs are below 20 BRL', sub: false },
+          { text: 'All costs above 100 BRL are a small minority', sub: false }
+        ]},
+        { id: 'b4', type: 'notes', title: 'Questions to investigate', icon: 'ti-bulb', tag: 'insight', notes: [
+          { text: 'Is freight value per product, per product-seller combo, or per seller? — determines how to aggregate it', sub: false },
+          { text: 'Which orders have the highest total price — many cheap items, or a few expensive ones?', sub: false },
+          { text: 'Can the same product appear at different prices across orders? Could reflect time, promotions, or inflation', sub: false },
+          { text: 'Do expensive orders use installment payments more often?', sub: false },
+          { text: 'At what total price does a shift toward credit card usage happen?', sub: false },
+          { text: 'Do higher freight prices correlate with lower review scores?', sub: false },
+          { text: 'Product weight and volume vs freight value — heavier/bigger = more expensive to ship?', sub: false },
+          { text: 'How much does freight contribute to total order cost?', sub: false }
+        ]}
+      ]
+    },
+    order_payments: {
+      blocks: [
+        { id: 'b1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+          { label: 'Total rows', val: '103,886' },
+          { label: 'Distinct orders', val: '99,440' },
+          { label: 'Payment value CV', val: '1.4' },
+          { label: 'Installment CV', val: '0.94' },
+          { label: 'Max installments', val: '24' },
+          { label: 'Mean installments', val: '2.85' },
+          { label: 'Sequential CV', val: '0.64' },
+          { label: 'Max sequential', val: '29' }
+        ]},
+        { id: 'b2', type: 'notes', title: 'Issues & observations', icon: 'ti-alert-circle', notes: [
+          { text: 'Distinct order IDs in order_items: 98,666 vs. in payments: 99,440 — discrepancy needs clarification', sub: false },
+          { text: '3 order IDs with payment_type = \'not_defined\' — these are cancelled orders; no cancellation timestamp so cause is unknown', sub: false, tag: 'fixed' },
+          { text: 'Other cancelled orders do have defined payment types, which is inconsistent', sub: false }
+        ]},
+        { id: 'b3', type: 'notes', title: 'Questions to investigate', icon: 'ti-bulb', tag: 'insight', notes: [
+          { text: 'Derive pattern for split-payment orders — typical order cost and payment type combinations used', sub: false },
+          { text: 'Frequency of each payment type overall', sub: false },
+          { text: 'Distribution of credit card installments vs. order cost — at what price range does installment use increase?', sub: false },
+          { text: 'Does approval time change depending on payment method?', sub: false }
+        ]}
+      ]
+    },
+    order_reviews: {
+      blocks: [
+        { id: 'b1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+          { label: 'Total rows', val: '99,224' },
+          { label: 'Distinct orders', val: '98,673' },
+          { label: 'Distinct review IDs', val: '98,410' },
+          { label: 'Score CV', val: '0.32' },
+          { label: 'Mean score', val: '4.08' },
+          { label: 'Null scores', val: '0' }
+        ]},
+        { id: 'b2', type: 'notes', title: 'Issues & observations', icon: 'ti-alert-circle', notes: [
+          { text: 'review_creation_date and review_answer_timestamp imported as VARCHAR — need to convert to DATETIME before computing gaps', sub: false },
+          { text: 'Some review IDs are shared across multiple order IDs — duplicates exist and need investigation', sub: false },
+          { text: 'Fewer distinct review IDs (98,410) than distinct order IDs (98,673) — some orders share the same review ID', sub: false }
+        ]},
+        { id: 'b3', type: 'notes', title: 'Questions to investigate', icon: 'ti-bulb', tag: 'insight', notes: [
+          { text: 'Gap between review creation date and answer timestamp — does it vary with review score?', sub: false },
+          { text: 'Is the review request always sent the day after delivery?', sub: false },
+          { text: 'Does comment length vary with review score?', sub: false },
+          { text: 'What percentage of reviews include a written comment?', sub: false },
+          { text: 'Review scores for late deliveries — do delayed orders get lower scores?', sub: false }
+        ]}
+      ]
+    },
+    orders: {
+      blocks: [
+        { id: 'b1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+          { label: 'Total rows', val: '99,441' },
+          { label: 'Null timestamps', val: '0' },
+          { label: 'Unavailable orders', val: '609' }
+        ]},
+        { id: 'b2', type: 'notes', title: 'Order statuses found', icon: 'ti-list', notes: [
+          { text: 'Delivered, Unavailable, Shipped, Canceled, Invoiced, Processing, Approved, Created', sub: false },
+          { text: '609 orders have status \'unavailable\'', sub: false },
+          { text: 'Only 6 distinct unavailable order IDs appear in order_items — the other 603 have no item entries', sub: true },
+          { text: 'All 609 unavailable orders have payment data in order_payments', sub: true },
+          { text: 'Cannot determine if these orders had refunds — no refund data available', sub: true }
+        ]},
+        { id: 'b3', type: 'notes', title: 'Data type issues', icon: 'ti-alert-circle', notes: [
+          { text: 'All timestamp columns imported as VARCHAR — must convert to DATETIME to compute time differences', sub: false }
+        ]},
+        { id: 'b4', type: 'notes', title: 'Questions to investigate', icon: 'ti-bulb', tag: 'insight', notes: [
+          { text: 'Does approval time gap change with payment method? (join with order_payments)', sub: false },
+          { text: 'Gap between estimated delivery and actual delivery — reveals the margin Olist gives itself', sub: false },
+          { text: 'Is the estimate-to-approval gap always fixed, or does it vary by number of items or sellers?', sub: true },
+          { text: 'Are deliveries more often on time or late vs. the estimate?', sub: true },
+          { text: 'Do late deliveries get worse review scores?', sub: true }
+        ]}
+      ]
+    },
+    products: {
+      blocks: [
+        { id: 'b1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+          { label: 'Total products', val: '32,951' },
+          { label: 'Categories in products table', val: '74' },
+          { label: 'Categories in translation table', val: '71 → 73' },
+          { label: 'No-category products', val: '610' }
+        ]},
+        { id: 'b2', type: 'notes', title: 'Issues resolved', icon: 'ti-check', tag: 'fixed', notes: [
+          { text: 'Translation table was missing 2 categories: pc_gamer and portateis_cozinha_e_preparadores_de_alimentos', sub: false },
+          { text: 'Manually added both — pc_gamer stays as-is; the second becomes \'kitchen_and_food_preparators_portables\'', sub: true },
+          { text: '610 products with blank product_category_name also identified', sub: false }
+        ]},
+        { id: 'b3', type: 'notes', title: 'Open questions', icon: 'ti-question-mark', notes: [
+          { text: 'The 610 products with no category, name, description, or photos — were they actually ordered?', sub: false },
+          { text: 'Yes — many were ordered, delivered, and even reviewed', sub: true },
+          { text: 'Many such orders contained only this one unknown product', sub: true },
+          { text: 'Possible explanations: database gap, or Olist allows listing products without full details', sub: true }
+        ]},
+        { id: 'b4', type: 'notes', title: 'Questions to investigate', icon: 'ti-bulb', tag: 'insight', notes: [
+          { text: 'Relation between product weight/volume and freight value', sub: false },
+          { text: 'Relation between product weight/volume and delivery time', sub: false },
+          { text: 'Number of products per category — which categories are most represented?', sub: false },
+          { text: 'Category vs. order volume — which categories have the highest demand?', sub: false },
+          { text: 'Categories with highest and lowest review scores — is there a pattern?', sub: false }
+        ]}
+      ]
+    },
+    sellers: {
+      blocks: [
+        { id: 'b1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+          { label: 'Total sellers', val: '3,095' },
+          { label: 'Null records', val: '0' },
+          { label: 'Distinct states', val: '23' },
+          { label: 'Distinct cities', val: '610' }
+        ]},
+        { id: 'b2', type: 'notes', title: 'Geographic observations', icon: 'ti-map-pin', notes: [
+          { text: 'Sao Paulo has the highest seller count by a very large margin', sub: false },
+          { text: 'Sellers are distributed across 23 states and 610 cities', sub: false }
+        ]},
+        { id: 'b3', type: 'notes', title: 'Questions to investigate', icon: 'ti-bulb', tag: 'insight', notes: [
+          { text: 'Seller geographical distribution — which states and cities have the most sellers?', sub: false },
+          { text: 'Number of orders per seller — are a small number of sellers driving most of the volume? (power law check)', sub: false },
+          { text: 'Seller state vs. customer state — which routes have the longest delivery times? Could help Olist know where to recruit more sellers', sub: false },
+          { text: 'Do sellers with more products get better or worse review scores? Does higher product count affect delivery speed?', sub: false }
+        ]}
+      ]
+    }
+  }
+};
+
+let data;
+
+function load() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    data = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(defaultData));
+  } catch(e) {
+    data = JSON.parse(JSON.stringify(defaultData));
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showToast();
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function uid() { return 'b' + Math.random().toString(36).slice(2,7); }
+
+function render() {
+  renderTabs();
+  renderSections();
+}
+
+function renderTabs() {
+  const container = document.getElementById('tabs');
+  container.innerHTML = '';
+  data.tabs.forEach(tab => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (tab.id === data.activeTab ? ' active' : '');
+    btn.innerHTML = `<span contenteditable="true" spellcheck="false" style="outline:none">${tab.label}</span><span class="tab-del icon-btn danger" title="Delete tab" onclick="deleteTab('${tab.id}',event)"><i class="ti ti-x" aria-hidden="true"></i></span>`;
+    btn.querySelector('span[contenteditable]').addEventListener('blur', e => {
+      tab.label = e.target.textContent.trim() || tab.label;
+      save();
+    });
+    btn.addEventListener('click', e => {
+      if (e.target.closest('.tab-del')) return;
+      data.activeTab = tab.id;
+      save();
+      render();
+    });
+    container.appendChild(btn);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-tab-btn';
+  addBtn.textContent = '+ new table';
+  addBtn.onclick = addTab;
+  container.appendChild(addBtn);
+}
+
+function renderSections() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+  data.tabs.forEach(tab => {
+    const sec = document.createElement('div');
+    sec.className = 'section' + (tab.id === data.activeTab ? ' visible' : '');
+    sec.id = 'sec_' + tab.id;
+
+    const secData = data.sections[tab.id] || { blocks: [] };
+
+    secData.blocks.forEach(block => {
+      sec.appendChild(renderBlock(tab.id, block));
+    });
+
+    const addRow = document.createElement('div');
+    addRow.className = 'add-block-row';
+    addRow.innerHTML = `
+      <select class="block-type-select" id="btype_${tab.id}">
+        <option value="notes">Notes block</option>
+        <option value="stats">Stats block</option>
+      </select>
+      <input class="add-block-input" placeholder="Block title (e.g. New observations)" id="btitle_${tab.id}" />
+      <button class="btn btn-primary" onclick="addBlock('${tab.id}')"><i class="ti ti-plus" aria-hidden="true"></i> Add block</button>
+    `;
+    sec.appendChild(addRow);
+
+    container.appendChild(sec);
+  });
+}
+
+function renderBlock(tabId, block) {
+  const div = document.createElement('div');
+  div.className = 'block';
+
+  const tagHTML = block.tag ? `<button class="tag tag-${block.tag}" onclick="cycleTag('${tabId}','${block.id}')">${block.tag}</button>` : `<button class="tag" style="border:0.5px dashed var(--border);background:none;color:var(--text-ter);font-size:11px" onclick="cycleTag('${tabId}','${block.id}')">+ tag</button>`;
+
+  div.innerHTML = `
+    <div class="block-header">
+      <div class="block-title">
+        <i class="ti ${block.icon}" aria-hidden="true"></i>
+        <span class="block-title-editable" contenteditable="true" spellcheck="false">${block.title}</span>
+        ${tagHTML}
+      </div>
+      <div class="block-actions">
+        <button class="icon-btn danger" title="Delete block" onclick="deleteBlock('${tabId}','${block.id}')"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  `;
+
+  div.querySelector('.block-title-editable').addEventListener('blur', e => {
+    block.title = e.target.textContent.trim() || block.title;
+    save();
+  });
+
+  if (block.type === 'stats') {
+    const statRow = document.createElement('div');
+    statRow.className = 'stat-row';
+    block.stats.forEach((s, si) => {
+      const pill = document.createElement('div');
+      pill.className = 'stat';
+      pill.innerHTML = `<span class="stat-label" contenteditable="true" spellcheck="false">${s.label}</span> <span class="stat-val" contenteditable="true" spellcheck="false">${s.val}</span> <button class="icon-btn danger" style="padding:1px 3px;font-size:12px" title="Remove" onclick="removeStat('${tabId}','${block.id}',${si})"><i class="ti ti-x" aria-hidden="true"></i></button>`;
+      pill.querySelector('.stat-label').addEventListener('blur', e => { s.label = e.target.textContent.trim(); save(); });
+      pill.querySelector('.stat-val').addEventListener('blur', e => { s.val = e.target.textContent.trim(); save(); });
+      statRow.appendChild(pill);
+    });
+    div.appendChild(statRow);
+
+    const addRow = document.createElement('div');
+    addRow.className = 'add-stat-row';
+    addRow.innerHTML = `
+      <input class="add-stat-input" placeholder="Label" id="slabel_${block.id}" style="width:140px"/>
+      <input class="add-stat-input" placeholder="Value" id="sval_${block.id}" style="width:100px"/>
+      <button class="btn" onclick="addStat('${tabId}','${block.id}')"><i class="ti ti-plus" aria-hidden="true"></i> Add</button>
+    `;
+    div.appendChild(addRow);
+
+  } else {
+    const list = document.createElement('ul');
+    list.className = 'note-list';
+    block.notes.forEach((note, ni) => {
+      list.appendChild(renderNote(tabId, block, note, ni));
+    });
+
+    const addRow = document.createElement('div');
+    addRow.className = 'add-note-row';
+    addRow.innerHTML = `
+      <input class="add-note-input" placeholder="Add a note... (shift+enter for sub-note)" id="ninput_${block.id}" />
+      <button class="btn" onclick="addNote('${tabId}','${block.id}',false)"><i class="ti ti-plus" aria-hidden="true"></i></button>
+      <button class="btn" title="Add as sub-note" onclick="addNote('${tabId}','${block.id}',true)" style="color:var(--text-ter)">↳</button>
+    `;
+    addRow.querySelector('input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        addNote(tabId, block.id, e.shiftKey);
+        e.preventDefault();
+      }
+    });
+
+    div.appendChild(list);
+    div.appendChild(addRow);
+  }
+
+  return div;
+}
+
+function renderNote(tabId, block, note, ni) {
+  const li = document.createElement('li');
+  li.className = 'note-item';
+  const bullet = note.sub ? '↳' : '—';
+  const cls = note.sub ? 'note-text sub-note' : 'note-text';
+  const tagBtn = note.tag ? `<button class="tag tag-${note.tag}" onclick="cycleNoteTag('${tabId}','${block.id}',${ni})">${note.tag}</button>` : '';
+
+  li.innerHTML = `
+    <span class="note-bullet">${bullet}</span>
+    <span class="${cls}" contenteditable="true" spellcheck="false">${note.text}${tagBtn}</span>
+    <span class="note-actions">
+      <button class="icon-btn" title="Toggle sub-note" onclick="toggleSub('${tabId}','${block.id}',${ni})"><i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      <button class="icon-btn danger" title="Delete note" onclick="deleteNote('${tabId}','${block.id}',${ni})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+    </span>
+  `;
+
+  li.querySelector('.note-text').addEventListener('blur', e => {
+    const raw = e.target.innerText.trim();
+    note.text = raw;
+    save();
+  });
+
+  return li;
+}
+
+function getBlock(tabId, blockId) {
+  return data.sections[tabId].blocks.find(b => b.id === blockId);
+}
+
+function addNote(tabId, blockId, sub) {
+  const input = document.getElementById('ninput_' + blockId);
+  const text = input.value.trim();
+  if (!text) return;
+  const block = getBlock(tabId, blockId);
+  block.notes.push({ text, sub });
+  input.value = '';
+  save();
+  render();
+}
+
+function deleteNote(tabId, blockId, ni) {
+  const block = getBlock(tabId, blockId);
+  block.notes.splice(ni, 1);
+  save();
+  render();
+}
+
+function toggleSub(tabId, blockId, ni) {
+  const block = getBlock(tabId, blockId);
+  block.notes[ni].sub = !block.notes[ni].sub;
+  save();
+  render();
+}
+
+function cycleNoteTag(tabId, blockId, ni) {
+  const tags = [undefined, 'fixed', 'insight', 'open'];
+  const block = getBlock(tabId, blockId);
+  const note = block.notes[ni];
+  const idx = tags.indexOf(note.tag);
+  note.tag = tags[(idx + 1) % tags.length];
+  save();
+  render();
+}
+
+function addStat(tabId, blockId) {
+  const label = document.getElementById('slabel_' + blockId).value.trim();
+  const val = document.getElementById('sval_' + blockId).value.trim();
+  if (!label) return;
+  const block = getBlock(tabId, blockId);
+  block.stats.push({ label, val });
+  save();
+  render();
+}
+
+function removeStat(tabId, blockId, si) {
+  const block = getBlock(tabId, blockId);
+  block.stats.splice(si, 1);
+  save();
+  render();
+}
+
+function addBlock(tabId) {
+  const title = document.getElementById('btitle_' + tabId).value.trim();
+  const type = document.getElementById('btype_' + tabId).value;
+  if (!title) return;
+  if (!data.sections[tabId]) data.sections[tabId] = { blocks: [] };
+  data.sections[tabId].blocks.push({
+    id: uid(), type, title,
+    icon: type === 'stats' ? 'ti-database' : 'ti-notes',
+    notes: [],
+    stats: []
+  });
+  save();
+  render();
+}
+
+function deleteBlock(tabId, blockId) {
+  if (!confirm('Delete this block?')) return;
+  data.sections[tabId].blocks = data.sections[tabId].blocks.filter(b => b.id !== blockId);
+  save();
+  render();
+}
+
+function cycleTag(tabId, blockId) {
+  const tags = [undefined, 'fixed', 'insight', 'open'];
+  const block = getBlock(tabId, blockId);
+  const idx = tags.indexOf(block.tag);
+  block.tag = tags[(idx + 1) % tags.length];
+  save();
+  render();
+}
+
+function addTab() {
+  const label = prompt('New table name:');
+  if (!label) return;
+  const id = 'tab_' + uid();
+  data.tabs.push({ id, label });
+  data.sections[id] = { blocks: [] };
+  data.activeTab = id;
+  save();
+  render();
+}
+
+function deleteTab(tabId, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this tab and all its notes?')) return;
+  data.tabs = data.tabs.filter(t => t.id !== tabId);
+  delete data.sections[tabId];
+  if (data.activeTab === tabId) data.activeTab = data.tabs[0]?.id || '';
+  save();
+  render();
+}
+
+function exportHTML() {
+  const clone = document.documentElement.cloneNode(true);
+  const script = clone.querySelector('script:last-of-type');
+  if (script) {
+    const saved = JSON.stringify(data).replace(/</g, '\\u003c');
+    const newScript = document.createElement('script');
+    newScript.textContent = script.textContent.replace(
+      "const stored = localStorage.getItem(STORAGE_KEY);",
+      `const stored = ${saved} ? JSON.stringify(${saved}) : localStorage.getItem(STORAGE_KEY);`
+    );
+    script.replaceWith(newScript);
+  }
+  const blob = new Blob(['<!DOCTYPE html>' + clone.outerHTML], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'olist_notes.html';
+  a.click();
+}
+
+load();
+render();
+</script>
+</body>
+</html>

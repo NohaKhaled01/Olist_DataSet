@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olist EDA Notes</title>
+<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --bg-sec: #f5f5f3;
+  --bg-info: #e6f1fb;
+  --bg-success: #eaf3de;
+  --bg-warning: #faeeda;
+  --bg-danger: #fcebeb;
+  --text: #1a1a18;
+  --text-sec: #5f5e5a;
+  --text-ter: #888780;
+  --text-info: #185fa5;
+  --text-success: #3b6d11;
+  --text-warning: #854f0b;
+  --text-danger: #a32d2d;
+  --border: rgba(0,0,0,0.12);
+  --border-strong: rgba(0,0,0,0.22);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1c;
+    --bg-sec: #2a2a28;
+    --bg-info: #0c447c;
+    --bg-success: #27500a;
+    --bg-warning: #633806;
+    --bg-danger: #791f1f;
+    --text: #f0ede8;
+    --text-sec: #b4b2a9;
+    --text-ter: #888780;
+    --text-info: #85b7eb;
+    --text-success: #97c459;
+    --text-warning: #ef9f27;
+    --text-danger: #f09595;
+    --border: rgba(255,255,255,0.1);
+    --border-strong: rgba(255,255,255,0.22);
+  }
+}
+
+body { font-family: var(--font); background: var(--bg-sec); color: var(--text); min-height: 100vh; padding: 2rem 1rem 4rem; }
+.notepad { max-width: 780px; margin: 0 auto; }
+
+.top-bar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 1rem; }
+.top-bar h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+.top-bar p { font-size: 13px; color: var(--text-sec); }
+.top-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.btn { font-family: var(--font); font-size: 13px; padding: 6px 12px; border-radius: var(--radius-md); border: 0.5px solid var(--border-strong); background: var(--bg); color: var(--text-sec); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.12s; white-space: nowrap; }
+.btn:hover { background: var(--bg-sec); color: var(--text); }
+.btn i { font-size: 14px; }
+.btn-primary { background: var(--bg-info); color: var(--text-info); border-color: transparent; }
+.btn-primary:hover { opacity: 0.85; background: var(--bg-info); }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; border-bottom: 0.5px solid var(--border); padding-bottom: 10px; align-items: center; }
+.tab { font-size: 13px; padding: 5px 12px; border-radius: var(--radius-md); border: 0.5px solid var(--border); background: var(--bg); color: var(--text-sec); cursor: pointer; font-family: var(--font); transition: all 0.12s; display: flex; align-items: center; gap: 5px; }
+.tab:hover { background: var(--bg-sec); color: var(--text); }
+.tab.active { background: var(--bg-info); color: var(--text-info); border-color: transparent; font-weight: 500; }
+.tab-del { font-size: 11px; opacity: 0; margin-left: 2px; pointer-events: none; }
+.tab:hover .tab-del { opacity: 0.5; pointer-events: all; }
+.tab-del:hover { opacity: 1 !important; color: var(--text-danger); }
+
+.add-tab-btn { font-size: 13px; padding: 5px 10px; border-radius: var(--radius-md); border: 0.5px dashed var(--border-strong); background: transparent; color: var(--text-ter); cursor: pointer; font-family: var(--font); transition: all 0.12s; }
+.add-tab-btn:hover { background: var(--bg-sec); color: var(--text); border-style: solid; }
+
+.section { display: none; }
+.section.visible { display: block; }
+
+.block { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.block-title { font-size: 12px; font-weight: 500; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 6px; }
+.block-title i { font-size: 14px; }
+.block-actions { display: flex; gap: 6px; }
+
+.icon-btn { background: none; border: none; cursor: pointer; color: var(--text-ter); font-size: 14px; padding: 3px 5px; border-radius: var(--radius-md); display: flex; align-items: center; font-family: var(--font); transition: all 0.12s; }
+.icon-btn:hover { background: var(--bg-sec); color: var(--text); }
+.icon-btn.danger:hover { background: var(--bg-danger); color: var(--text-danger); }
+
+.note-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.note-item { display: flex; align-items: flex-start; gap: 6px; }
+.note-bullet { color: var(--text-ter); font-size: 13px; padding-top: 2px; flex-shrink: 0; width: 16px; text-align: center; }
+.note-text { font-size: 14px; color: var(--text); line-height: 1.55; flex: 1; min-width: 0; cursor: text; border-radius: 4px; padding: 1px 4px; margin: -1px -4px; transition: background 0.1s; word-break: break-word; }
+.note-text:hover { background: var(--bg-sec); }
+.note-text:focus { outline: none; background: var(--bg-sec); box-shadow: 0 0 0 2px rgba(23,95,165,0.2); }
+.note-text.sub-note { color: var(--text-sec); font-size: 13px; }
+.note-actions { display: flex; gap: 2px; flex-shrink: 0; opacity: 0; transition: opacity 0.1s; }
+.note-item:hover .note-actions { opacity: 1; }
+
+.tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: var(--radius-md); font-weight: 500; margin-left: 4px; vertical-align: middle; cursor: pointer; border: none; font-family: var(--font); }
+.tag-fixed { background: var(--bg-success); color: var(--text-success); }
+.tag-insight { background: var(--bg-info); color: var(--text-info); }
+.tag-open { background: var(--bg-warning); color: var(--text-warning); }
+
+.stat-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.stat { background: var(--bg-sec); border-radius: var(--radius-md); padding: 6px 12px; font-size: 13px; color: var(--text-sec); display: flex; align-items: center; gap: 6px; }
+.stat-val { font-weight: 500; color: var(--text); cursor: text; min-width: 4px; border-radius: 3px; padding: 0 2px; }
+.stat-val:focus { outline: none; background: var(--bg); box-shadow: 0 0 0 2px rgba(23,95,165,0.2); }
+.stat-label { cursor: text; border-radius: 3px; padding: 0 2px; }
+.stat-label:focus { outline: none; background: var(--bg); box-shadow: 0 0 0 2px rgba(23,95,165,0.2); }
+
+.add-note-row { margin-top: 8px; padding-top: 8px; border-top: 0.5px dashed var(--border); display: flex; gap: 6px; }
+.add-note-input { flex: 1; font-family: var(--font); font-size: 13px; padding: 5px 8px; border-radius: var(--radius-md); border: 0.5px solid var(--border); background: var(--bg-sec); color: var(--text); outline: none; }
+.add-note-input:focus { border-color: var(--text-info); box-shadow: 0 0 0 2px rgba(23,95,165,0.15); }
+.add-note-input::placeholder { color: var(--text-ter); }
+
+.add-stat-row { margin-top: 8px; padding-top: 8px; border-top: 0.5px dashed var(--border); display: flex; gap: 6px; flex-wrap: wrap; }
+.add-stat-input { font-family: var(--font); font-size: 13px; padding: 5px 8px; border-radius: var(--radius-md); border: 0.5px solid var(--border); background: var(--bg-sec); color: var(--text); outline: none; }
+.add-stat-input:focus { border-color: var(--text-info); box-shadow: 0 0 0 2px rgba(23,95,165,0.15); }
+.add-stat-input::placeholder { color: var(--text-ter); }
+
+.add-block-row { border: 0.5px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 12px 1.25rem; margin-bottom: 1rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.add-block-input { flex: 1; font-family: var(--font); font-size: 13px; padding: 5px 8px; border-radius: var(--radius-md); border: 0.5px solid var(--border); background: var(--bg-sec); color: var(--text); outline: none; min-width: 160px; }
+.add-block-input:focus { border-color: var(--text-info); }
+.add-block-input::placeholder { color: var(--text-ter); }
+.block-type-select { font-family: var(--font); font-size: 13px; padding: 5px 8px; border-radius: var(--radius-md); border: 0.5px solid var(--border); background: var(--bg-sec); color: var(--text); outline: none; cursor: pointer; }
+
+.saved-toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 8px 14px; font-size: 13px; color: var(--text-success); display: flex; align-items: center; gap: 6px; opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; z-index: 100; }
+.saved-toast.show { opacity: 1; transform: translateY(0); }
+
+.block-title-editable { cursor: text; border-radius: 3px; padding: 0 3px; margin-left: -3px; }
+.block-title-editable:focus { outline: none; background: var(--bg-sec); }
+
+.cross-table { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; border-left: 3px solid #378add; }
+</style>
+</head>
+<body>
+<div class="notepad">
+  <div class="top-bar">
+    <div>
+      <h1>Olist EDA notes</h1>
+      <p>Exploratory data analysis — click any text to edit</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn" onclick="exportHTML()"><i class="ti ti-download" aria-hidden="true"></i> Download</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="sections"></div>
+</div>
+
+<div class="saved-toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i> Saved</div>
+
+<script>
+const STORAGE_KEY = 'olist_eda_notes_v1';
+
+const defaultData = {
+  tabs: [
+    { id: 'customers', label: 'Customers' },
+    { id: 'geolocation', label: 'Geolocation' },
+    { id: 'order_items', label: 'Order items' },
+    { id: 'order_payments', label: 'Order payments' },
+    { id: 'order_reviews', label: 'Order reviews' },
+    { id: 'orders', label: 'Orders' },
+    { id: 'products', label: 'Products' },
+    { id: 'sellers', label: 'Sellers' },
+    { id: 'translation', label: 'Translation' },
+    { id: 'cross', label: 'Cross-table' }
+  ],
+  activeTab: 'customers',
+  sections: {
+    customers: { blocks: [
+      { id: 'c0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'Contains data about customers registered on the Olist platform', sub: false },
+        { text: 'customer_id — generated per order. A new one is created every time the same user places an order', sub: false },
+        { text: 'customer_unique_id — the actual user\'s ID. Stays the same across all orders', sub: false },
+        { text: 'Three orders by the same user = three different customer_ids, but the same customer_unique_id', sub: true }
+      ]},
+      { id: 'c1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records', val: '99,441' },
+        { label: 'Distinct users (unique_id)', val: '96,096' }
+      ]},
+      { id: 'c2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'Most customers are in SP — São Paulo. Least are in RR — Roraima', sub: false },
+        { text: 'Highest customer counts by city: São Paulo and Rio de Janeiro', sub: false },
+        { text: 'No nulls, no short zip codes, no short city names or IDs — clean import', sub: false }
+      ]},
+      { id: 'c3', type: 'notes', title: 'Open questions', icon: 'ti-help', tag: 'open', notes: [
+        { text: 'Cities with lower customer counts — do they have a higher number of orders per customer vs the bigger cities?', sub: false },
+        { text: 'City names likely have misspellings that SQL can\'t catch (e.g. "sao paulo" vs "são paulo" counted as different cities)', sub: false },
+        { text: 'Will need Python + fuzzy matching later. Whether it\'s worth doing depends on what we need from the city column', sub: true }
+      ]}
+    ]},
+    geolocation: { blocks: [
+      { id: 'g0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'Contains zip codes with their lat/lng coordinates, city, and state', sub: false },
+        { text: 'Each zip code can have multiple lat/lng pairs within the same city and state', sub: false }
+      ]},
+      { id: 'g1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records', val: '1,000,163' }
+      ]},
+      { id: 'g2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'No PK could be defined on import — no single column or combination was unique enough. Imported without one', sub: false },
+        { text: 'No obvious direct use yet — will become useful when enriching customer/seller data with location for distance or map-based analysis', sub: false }
+      ]},
+      { id: 'g3', type: 'notes', title: 'Open questions', icon: 'ti-help', tag: 'open', notes: [
+        { text: 'Is the lat/lng variation per zip code due to multiple data sources being merged?', sub: false },
+        { text: 'Will be useful for: travel distance per order → connect to freight value, delivery time, and review scores', sub: false }
+      ]}
+    ]},
+    order_items: { blocks: [
+      { id: 'oi0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'Contains the line items for each order. Each row is one item in one order', sub: false },
+        { text: 'order_item_id — a sequential counter for items within an order (1st, 2nd, etc.). Not a product identifier', sub: false },
+        { text: 'The same order_id repeats for each item in that order, with order_item_id incrementing', sub: false },
+        { text: 'One order can contain items from multiple different sellers', sub: false }
+      ]},
+      { id: 'oi1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records', val: '112,650' },
+        { label: 'Distinct orders', val: '98,666' },
+        { label: 'Max items in one order', val: '21' }
+      ]},
+      { id: 'oi2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'Freight value issue: if the same product from the same seller appears multiple times in one order, freight_value is repeated per item — not split or consolidated', sub: false },
+        { text: 'This misrepresents the actual shipping cost. To get accurate shipping costs, need to group by order_id + product_id + seller_id before summing freight', sub: true },
+        { text: 'shipping_limit_date — unclear if this is the deadline for the seller to hand the order to the carrier, or the actual shipping date', sub: false },
+        { text: 'Needs to be compared against the date columns in the orders table to confirm', sub: true }
+      ]},
+      { id: 'oi3', type: 'notes', title: 'Possible insights', icon: 'ti-bulb', tag: 'insight', notes: [
+        { text: 'Average number of items per order', sub: false },
+        { text: 'Which orders have the highest total price — high quantity of cheap items, or low quantity of expensive ones?', sub: false },
+        { text: 'Compare shipping_limit_date to order dates to understand seller compliance and delivery timelines', sub: false }
+      ]}
+    ]},
+    order_payments: { blocks: [
+      { id: 'op0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'Contains payment data for each order. An order can be paid in one go or split across multiple payment methods', sub: false },
+        { text: 'payment_sequential — counts the number of payment records per order (1 = single, 2+ = split payment)', sub: false },
+        { text: 'payment_installments — only meaningful for credit card. All other payment types have 1 installment', sub: false }
+      ]},
+      { id: 'op1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records', val: '103,886' },
+        { label: 'Distinct order ids', val: '99,440' }
+      ]},
+      { id: 'op2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'Discrepancy: payments table has 99,440 distinct order ids vs 98,666 in the items table — a difference of 774 orders', sub: false },
+        { text: 'These orders have payment records but no items. Likely cancelled or unavailable orders — needs investigation', sub: true },
+        { text: '3 orders with undefined payment type — also have no matching records in the items table. Will need to be removed from all tables', sub: false }
+      ]},
+      { id: 'op3', type: 'notes', title: 'Open questions', icon: 'ti-help', tag: 'open', notes: [
+        { text: 'Are split payments (sequential > 1) a sign of financial difficulty, or customers intentionally combining a voucher with a credit card?', sub: false },
+        { text: 'Need to look at payment type combinations to find out — what was used with what', sub: true },
+        { text: 'Do high-value orders get split more often?', sub: false }
+      ]},
+      { id: 'op4', type: 'notes', title: 'Possible insights', icon: 'ti-bulb', tag: 'insight', notes: [
+        { text: 'Frequency of each payment type', sub: false },
+        { text: 'Distribution of credit card installments — how many people pay in how many installments?', sub: false },
+        { text: 'How often are orders paid with multiple methods, and what combinations appear?', sub: false }
+      ]}
+    ]},
+    order_reviews: { blocks: [
+      { id: 'or0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'Contains reviews submitted for orders. Reviews are at the order level — not per item', sub: false },
+        { text: 'review_score — 1 to 5', sub: false },
+        { text: 'review_comment_title and review_comment_message — optional fields', sub: false },
+        { text: 'review_creation_date — likely when Olist sent the review request. All timestamps are at midnight, suggesting a scheduled batch job', sub: false },
+        { text: 'review_answer_timestamp — when the customer actually submitted the review', sub: false }
+      ]},
+      { id: 'or1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records', val: '99,224' }
+      ]},
+      { id: 'or2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'Total is higher than the 98,666 distinct orders in items table — needs comparison with orders table to understand why', sub: false },
+        { text: 'The gap between creation_date and answer_timestamp = how long after being asked did the customer bother to respond. More interesting than just "time to submit"', sub: false },
+        { text: 'Is the review request sent the day after delivery? Needs to be checked against order_delivered_customer_date in the orders table', sub: false },
+        { text: 'Comments are in Portuguese — full text analysis would need NLP tools. But can still extract value without reading them', sub: false }
+      ]},
+      { id: 'or3', type: 'notes', title: 'Open questions', icon: 'ti-help', tag: 'open', notes: [
+        { text: 'Do angry customers (score 1–2) respond faster than happy ones (score 5)?', sub: false },
+        { text: 'Do lower scores correlate with longer comment length? Theory: angry customers write more', sub: false },
+        { text: 'What % of reviews per score actually include a comment?', sub: false }
+      ]},
+      { id: 'or4', type: 'notes', title: 'Possible insights', icon: 'ti-bulb', tag: 'insight', notes: [
+        { text: 'Response time vs review score', sub: false },
+        { text: 'Comment rate by score — does unhappiness drive more written feedback?', sub: false },
+        { text: 'Word count of messages vs review score', sub: false }
+      ]}
+    ]},
+    orders: { blocks: [
+      { id: 'o0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'The central table. Contains one row per order with its status and all the key timestamps', sub: false },
+        { text: 'order_purchase_timestamp — when the customer placed the order', sub: false },
+        { text: 'order_approved_at — likely automated payment approval by the platform, not the seller', sub: false },
+        { text: 'order_delivered_carrier_date — when the carrier picked up from the seller. Compare against shipping_limit_date in the items table', sub: false },
+        { text: 'order_delivered_customer_date — actual delivery date', sub: false },
+        { text: 'order_estimated_delivery_date — what the customer was told at time of purchase', sub: false }
+      ]},
+      { id: 'o1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records', val: '99,441' },
+        { label: 'Distinct order ids', val: '99,441' }
+      ]},
+      { id: 'o2', type: 'notes', title: 'Order statuses', icon: 'ti-list', notes: [
+        { text: 'delivered — count & % TBD', sub: false },
+        { text: 'shipped — count & % TBD', sub: false },
+        { text: 'canceled — count & % TBD', sub: false },
+        { text: 'unavailable — count & % TBD', sub: false },
+        { text: 'invoiced — count & % TBD', sub: false },
+        { text: 'processing — count & % TBD', sub: false },
+        { text: 'approved — count & % TBD', sub: false },
+        { text: 'created — count & % TBD', sub: false },
+        { text: 'Special focus on canceled and unavailable — cross-reference their order ids against the ghost orders found in payments and reviews', sub: true }
+      ]},
+      { id: 'o3', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'Same record count as customers table — makes sense since each customer_id is generated per order', sub: false },
+        { text: 'Approval time gap — essentially payment processing time. Boleto payments likely take longer than credit cards', sub: false },
+        { text: 'Delivery margin — gap between estimated and actual delivery tells us whether Olist deliberately under-promises', sub: false },
+        { text: 'For large approval time gaps, worth looking at order details: number of items and payment type', sub: false }
+      ]},
+      { id: 'o4', type: 'notes', title: 'Open questions', icon: 'ti-help', tag: 'open', notes: [
+        { text: 'Does payment type affect approval time?', sub: false },
+        { text: 'How often does actual delivery beat, match, or miss the estimate?', sub: false },
+        { text: 'What do the reviews look like for late deliveries?', sub: false },
+        { text: 'Do canceled/unavailable orders explain the discrepancies found in the payments and items tables?', sub: false }
+      ]},
+      { id: 'o5', type: 'notes', title: 'Possible insights', icon: 'ti-bulb', tag: 'insight', notes: [
+        { text: 'Approval time distribution — and what drives outliers', sub: false },
+        { text: 'On-time delivery rate — estimated vs actual', sub: false },
+        { text: 'Olist\'s buffer strategy — are they padding estimates intentionally?', sub: false },
+        { text: 'Order status funnel — where do orders drop off?', sub: false }
+      ]}
+    ]},
+    products: { blocks: [
+      { id: 'p0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'Contains data for all products listed on the platform. No seller_id here — connection to sellers is only through the order_items table', sub: false }
+      ]},
+      { id: 'p1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records / distinct ids', val: '32,951' },
+        { label: 'Product categories', val: '74' },
+        { label: 'Empty category name', val: '610' }
+      ]},
+      { id: 'p2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'Categories are likely pre-set by Olist — low risk of misspelled duplicate categories', sub: false },
+        { text: '610 products have empty category names, and also missing name length, description length, and photos qty', sub: false },
+        { text: 'Need to check if anyone actually bought them via the order_items table', sub: true }
+      ]},
+      { id: 'p3', type: 'notes', title: 'Possible insights', icon: 'ti-bulb', tag: 'insight', notes: [
+        { text: 'Product weight and volume vs freight value — does heavier/bigger = more expensive to ship?', sub: false },
+        { text: 'Product weight and volume vs delivery time', sub: false },
+        { text: 'Number of products per category — which are most represented on the platform?', sub: false },
+        { text: 'Categories vs orders — which categories have the highest demand?', sub: false },
+        { text: 'Bonus: are products in certain categories bought in bulk or one at a time?', sub: false },
+        { text: 'Which categories have the lowest review scores? Could point to product quality, seller, or delivery issues', sub: false },
+        { text: 'Which categories have the highest and lowest prices?', sub: false }
+      ]}
+    ]},
+    sellers: { blocks: [
+      { id: 's0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'Contains data for all sellers on the platform', sub: false }
+      ]},
+      { id: 's1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records / distinct ids', val: '3,095' }
+      ]},
+      { id: 's2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'More sellers in an area = more products, more competition, potentially lower prices, and more buyers. Geographical distribution matters', sub: false }
+      ]},
+      { id: 's3', type: 'notes', title: 'Possible insights', icon: 'ti-bulb', tag: 'insight', notes: [
+        { text: 'Seller geographical distribution — which states and cities have the most sellers?', sub: false },
+        { text: 'Number of orders per seller — are a small number of sellers driving most of the volume?', sub: false },
+        { text: 'Seller location vs customer location — which state-to-state routes have the longest delivery times?', sub: false },
+        { text: 'Could tell Olist where to recruit more sellers', sub: true },
+        { text: 'Reviews for sellers with more products — does product count relate to review score or delivery speed?', sub: false }
+      ]}
+    ]},
+    translation: { blocks: [
+      { id: 't0', type: 'notes', title: 'What this table is', icon: 'ti-info-circle', notes: [
+        { text: 'A lookup table translating Portuguese category names to English', sub: false }
+      ]},
+      { id: 't1', type: 'stats', title: 'Key numbers', icon: 'ti-database', stats: [
+        { label: 'Total records', val: '71' }
+      ]},
+      { id: 't2', type: 'notes', title: 'Observations', icon: 'ti-eye', notes: [
+        { text: 'Discrepancy: 74 categories in the products table but only 71 translations', sub: false },
+        { text: 'Need to find the 3 missing ones — could be untranslated categories, or a spelling mismatch between the two tables (same fuzzy matching problem as cities)', sub: true }
+      ]}
+    ]},
+    cross: { blocks: [
+      { id: 'cr1', type: 'notes', title: 'The ghost orders', icon: 'ti-ghost', tag: 'open', notes: [
+        { text: 'Orders that appear in payments or reviews but not in items', sub: false },
+        { text: 'Hypothesis: these are canceled or unavailable orders', sub: false },
+        { text: 'Cross-reference order_status to confirm', sub: true }
+      ]},
+      { id: 'cr2', type: 'notes', title: 'The 3 undefined payment type orders', icon: 'ti-alert-circle', notes: [
+        { text: 'Remove from all tables before any analysis', sub: false }
+      ]},
+      { id: 'cr3', type: 'notes', title: 'Travelling distances', icon: 'ti-map-2', tag: 'insight', notes: [
+        { text: 'Use geolocation + seller/customer zip codes to estimate distance per order', sub: false },
+        { text: 'Connect to freight value, delivery time, and review scores', sub: false },
+        { text: 'Could be the most interesting cross-table analysis in the whole project', sub: true }
+      ]}
+    ]}
+  }
+};
+
+let data;
+
+function load() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    data = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(defaultData));
+  } catch(e) {
+    data = JSON.parse(JSON.stringify(defaultData));
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showToast();
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function uid() { return 'b' + Math.random().toString(36).slice(2,7); }
+
+function render() { renderTabs(); renderSections(); }
+
+function renderTabs() {
+  const container = document.getElementById('tabs');
+  container.innerHTML = '';
+  data.tabs.forEach(tab => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (tab.id === data.activeTab ? ' active' : '');
+    btn.innerHTML = `<span contenteditable="true" spellcheck="false" style="outline:none">${tab.label}</span><span class="tab-del icon-btn danger" title="Delete tab" onclick="deleteTab('${tab.id}',event)"><i class="ti ti-x" aria-hidden="true"></i></span>`;
+    btn.querySelector('span[contenteditable]').addEventListener('blur', e => { tab.label = e.target.textContent.trim() || tab.label; save(); });
+    btn.addEventListener('click', e => { if (e.target.closest('.tab-del')) return; data.activeTab = tab.id; save(); render(); });
+    container.appendChild(btn);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-tab-btn';
+  addBtn.textContent = '+ new table';
+  addBtn.onclick = addTab;
+  container.appendChild(addBtn);
+}
+
+function renderSections() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+  data.tabs.forEach(tab => {
+    const sec = document.createElement('div');
+    sec.className = 'section' + (tab.id === data.activeTab ? ' visible' : '');
+    sec.id = 'sec_' + tab.id;
+    const secData = data.sections[tab.id] || { blocks: [] };
+    secData.blocks.forEach(block => sec.appendChild(renderBlock(tab.id, block)));
+    const addRow = document.createElement('div');
+    addRow.className = 'add-block-row';
+    addRow.innerHTML = `<select class="block-type-select" id="btype_${tab.id}"><option value="notes">Notes block</option><option value="stats">Stats block</option></select><input class="add-block-input" placeholder="Block title" id="btitle_${tab.id}" /><button class="btn btn-primary" onclick="addBlock('${tab.id}')"><i class="ti ti-plus" aria-hidden="true"></i> Add block</button>`;
+    sec.appendChild(addRow);
+    container.appendChild(sec);
+  });
+}
+
+function renderBlock(tabId, block) {
+  const div = document.createElement('div');
+  div.className = 'block';
+  const tagHTML = block.tag ? `<button class="tag tag-${block.tag}" onclick="cycleTag('${tabId}','${block.id}')">${block.tag}</button>` : `<button class="tag" style="border:0.5px dashed var(--border);background:none;color:var(--text-ter);font-size:11px" onclick="cycleTag('${tabId}','${block.id}')">+ tag</button>`;
+  div.innerHTML = `<div class="block-header"><div class="block-title"><i class="ti ${block.icon}" aria-hidden="true"></i><span class="block-title-editable" contenteditable="true" spellcheck="false">${block.title}</span>${tagHTML}</div><div class="block-actions"><button class="icon-btn danger" title="Delete block" onclick="deleteBlock('${tabId}','${block.id}')"><i class="ti ti-trash" aria-hidden="true"></i></button></div></div>`;
+  div.querySelector('.block-title-editable').addEventListener('blur', e => { block.title = e.target.textContent.trim() || block.title; save(); });
+
+  if (block.type === 'stats') {
+    const statRow = document.createElement('div');
+    statRow.className = 'stat-row';
+    (block.stats || []).forEach((s, si) => {
+      const pill = document.createElement('div');
+      pill.className = 'stat';
+      pill.innerHTML = `<span class="stat-label" contenteditable="true" spellcheck="false">${s.label}</span> <span class="stat-val" contenteditable="true" spellcheck="false">${s.val}</span> <button class="icon-btn danger" style="padding:1px 3px;font-size:12px" onclick="removeStat('${tabId}','${block.id}',${si})"><i class="ti ti-x" aria-hidden="true"></i></button>`;
+      pill.querySelector('.stat-label').addEventListener('blur', e => { s.label = e.target.textContent.trim(); save(); });
+      pill.querySelector('.stat-val').addEventListener('blur', e => { s.val = e.target.textContent.trim(); save(); });
+      statRow.appendChild(pill);
+    });
+    div.appendChild(statRow);
+    const addRow = document.createElement('div');
+    addRow.className = 'add-stat-row';
+    addRow.innerHTML = `<input class="add-stat-input" placeholder="Label" id="slabel_${block.id}" style="width:140px"/><input class="add-stat-input" placeholder="Value" id="sval_${block.id}" style="width:100px"/><button class="btn" onclick="addStat('${tabId}','${block.id}')"><i class="ti ti-plus" aria-hidden="true"></i> Add</button>`;
+    div.appendChild(addRow);
+  } else {
+    const list = document.createElement('ul');
+    list.className = 'note-list';
+    (block.notes || []).forEach((note, ni) => list.appendChild(renderNote(tabId, block, note, ni)));
+    const addRow = document.createElement('div');
+    addRow.className = 'add-note-row';
+    addRow.innerHTML = `<input class="add-note-input" placeholder="Add a note... (shift+enter for sub-note)" id="ninput_${block.id}" /><button class="btn" onclick="addNote('${tabId}','${block.id}',false)"><i class="ti ti-plus" aria-hidden="true"></i></button><button class="btn" title="Add as sub-note" onclick="addNote('${tabId}','${block.id}',true)" style="color:var(--text-ter)">↳</button>`;
+    addRow.querySelector('input').addEventListener('keydown', e => { if (e.key === 'Enter') { addNote(tabId, block.id, e.shiftKey); e.preventDefault(); } });
+    div.appendChild(list);
+    div.appendChild(addRow);
+  }
+  return div;
+}
+
+function renderNote(tabId, block, note, ni) {
+  const li = document.createElement('li');
+  li.className = 'note-item';
+  const bullet = note.sub ? '↳' : '—';
+  const cls = note.sub ? 'note-text sub-note' : 'note-text';
+  const tagBtn = note.tag ? `<button class="tag tag-${note.tag}" onclick="cycleNoteTag('${tabId}','${block.id}',${ni})">${note.tag}</button>` : '';
+  li.innerHTML = `<span class="note-bullet">${bullet}</span><span class="${cls}" contenteditable="true" spellcheck="false">${note.text}${tagBtn}</span><span class="note-actions"><button class="icon-btn" title="Toggle sub-note" onclick="toggleSub('${tabId}','${block.id}',${ni})"><i class="ti ti-arrow-right" aria-hidden="true"></i></button><button class="icon-btn danger" onclick="deleteNote('${tabId}','${block.id}',${ni})"><i class="ti ti-trash" aria-hidden="true"></i></button></span>`;
+  li.querySelector('.note-text').addEventListener('blur', e => { note.text = e.target.innerText.trim(); save(); });
+  return li;
+}
+
+function getBlock(tabId, blockId) { return data.sections[tabId].blocks.find(b => b.id === blockId); }
+
+function addNote(tabId, blockId, sub) {
+  const input = document.getElementById('ninput_' + blockId);
+  const text = input.value.trim();
+  if (!text) return;
+  getBlock(tabId, blockId).notes.push({ text, sub });
+  input.value = '';
+  save(); render();
+}
+
+function deleteNote(tabId, blockId, ni) { getBlock(tabId, blockId).notes.splice(ni, 1); save(); render(); }
+function toggleSub(tabId, blockId, ni) { const n = getBlock(tabId, blockId).notes[ni]; n.sub = !n.sub; save(); render(); }
+
+function cycleNoteTag(tabId, blockId, ni) {
+  const tags = [undefined, 'fixed', 'insight', 'open'];
+  const note = getBlock(tabId, blockId).notes[ni];
+  note.tag = tags[(tags.indexOf(note.tag) + 1) % tags.length];
+  save(); render();
+}
+
+function addStat(tabId, blockId) {
+  const label = document.getElementById('slabel_' + blockId).value.trim();
+  const val = document.getElementById('sval_' + blockId).value.trim();
+  if (!label) return;
+  getBlock(tabId, blockId).stats.push({ label, val });
+  save(); render();
+}
+
+function removeStat(tabId, blockId, si) { getBlock(tabId, blockId).stats.splice(si, 1); save(); render(); }
+
+function addBlock(tabId) {
+  const title = document.getElementById('btitle_' + tabId).value.trim();
+  const type = document.getElementById('btype_' + tabId).value;
+  if (!title) return;
+  if (!data.sections[tabId]) data.sections[tabId] = { blocks: [] };
+  data.sections[tabId].blocks.push({ id: uid(), type, title, icon: type === 'stats' ? 'ti-database' : 'ti-notes', notes: [], stats: [] });
+  save(); render();
+}
+
+function deleteBlock(tabId, blockId) {
+  if (!confirm('Delete this block?')) return;
+  data.sections[tabId].blocks = data.sections[tabId].blocks.filter(b => b.id !== blockId);
+  save(); render();
+}
+
+function cycleTag(tabId, blockId) {
+  const tags = [undefined, 'fixed', 'insight', 'open'];
+  const block = getBlock(tabId, blockId);
+  block.tag = tags[(tags.indexOf(block.tag) + 1) % tags.length];
+  save(); render();
+}
+
+function addTab() {
+  const label = prompt('New table name:');
+  if (!label) return;
+  const id = 'tab_' + uid();
+  data.tabs.push({ id, label });
+  data.sections[id] = { blocks: [] };
+  data.activeTab = id;
+  save(); render();
+}
+
+function deleteTab(tabId, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this tab and all its notes?')) return;
+  data.tabs = data.tabs.filter(t => t.id !== tabId);
+  delete data.sections[tabId];
+  if (data.activeTab === tabId) data.activeTab = data.tabs[0]?.id || '';
+  save(); render();
+}
+
+function exportHTML() {
+  const clone = document.documentElement.cloneNode(true);
+  const scripts = clone.querySelectorAll('script');
+  const last = scripts[scripts.length - 1];
+  if (last) {
+    const saved = JSON.stringify(data).replace(/</g, '\\u003c');
+    const newScript = document.createElement('script');
+    newScript.textContent = last.textContent.replace(
+      "const stored = localStorage.getItem(STORAGE_KEY);",
+      `const stored = ${saved} ? JSON.stringify(${saved}) : localStorage.getItem(STORAGE_KEY);`
+    );
+    last.replaceWith(newScript);
+  }
+  const blob = new Blob(['<!DOCTYPE html>' + clone.outerHTML], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'olist_eda_notes.html';
+  a.click();
+}
+
+load();
+render();
+</script>
+</body>
+</html>
