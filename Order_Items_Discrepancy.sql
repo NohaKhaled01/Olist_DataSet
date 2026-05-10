@@ -1,12 +1,29 @@
 # Discrepancies to investigate:
 	# Payments table has 99,440 distinct order ids vs 98,666 in the items table — a difference of 774 more orders in the payment
 		# These orders have payment records but no items. Likely cancelled or unavailable orders
-		# Output - below
+		# Output:
+			# 603 unavailable. 164 cancelled. 2 invoiced. 5 created. 1 shipped.
+				# 603 unavailable - never shipped. No carrier delivered date
+                # 164 cancelled - 141 cancelled before approval, 23 cancelled after approval, before carrier date. No customer delivered date
+				# 1 shipped - never arrived. No customer delivered date
+				# 2 invoiced - never shipped. No carrier delivered date
+				# 5 created - never approved. No approval date
 	# 3 orders with undefined payment type — also have no matching records in the items table
 		# Output: Cancelled orders - present in the orders table.
+        # To do: Be wary of payment type when doing analysis on payments
 	# Orders table has ONE MORE ORDER ID than payments table
 		# Output: Order was delivered and had items .. probably an exporting issue
+        # To do: Nothing .. just be aware of this.
     # Total reviews is higher than the 98,666 distinct orders in items table
+		# 99224 review ids versus 98666 orders. 
+        # Output: The same order could have multiple review ids - a new review request is issued with the delivery of each product in the order; thus, more review ids than actual orders
+	
+# Other issues Found along the way:
+	# The order_item_id counter in the order_items table doesnot correspond to the number of items in an order - it was found through the reviews table that an order could have three products, but have the item id as 1.
+    # Cont: It also doesnot consistently correspond to the number of different items in the order - it was found that orders with similar product ids had the item id going up - 1, 2, .. 
+    # This means: There is no way to know the number of products per order - this is not stored in this dataset.
+    # Cont: And calculating the freight for each order will not be very accurate, because there is no way of knowing if the delivery is charged per number of products, or number of sellers, or per order
+    # This mainly affects the freight costs investigation. Other than that, it's fine.
 
 SELECT COUNT(DISTINCT order_id)
 FROM order_payments
@@ -111,10 +128,7 @@ WHERE order_id IN (
 AND (order_status = 'canceled')
 ORDER BY order_purchase_timestamp 
 ; # 164 cancelled - 141 cancelled before approval, 23 cancelled after approval, before carrier date. No customer delivered date
-
-## So the big picture is:
-	# 774 orders in payments but not in items .. 
-    
+---
 ## 99441 in orders versus 99440 in payments
 
 SELECT *
@@ -182,6 +196,9 @@ WHERE order_id = '03c939fd7fd3b38f8485a0f95798f1f6'
 ;
 
 SELECT *
+FROM (
+SELECT *, ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY order_id) as row_num,
+	COUNT(order_id) OVER (PARTITION BY order_id) as order_count_items
 FROM order_items
 WHERE order_id IN (
 	SELECT order_id
@@ -192,18 +209,48 @@ WHERE order_id IN (
 		) as sub_table
 	WHERE order_count > 1
 	)
+    ) as sub_table_2
+WHERE order_count_items > 1
+ORDER BY order_id
 ;
 
 SELECT *
-FROM order_items
-WHERE order_id = '03c939fd7fd3b38f8485a0f95798f1f6'
+FROM (
+SELECT *, 
+	ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY review_id) as row_num,
+	COUNT(order_id) OVER (PARTITION BY order_id) as order_count
+FROM order_reviews
+	) as sub_table
+WHERE order_count > 1
+ORDER BY order_id
 ;
 
 SELECT *
-FROM order_items
-WHERE order_id = '0749426d1c48fe5943cbdf1316ace0aa'
+FROM (
+	SELECT *, 
+			ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY order_id) as row_num, 
+            COUNT(order_id) OVER (PARTITION BY order_id) as order_count_items
+	FROM order_items
+	WHERE order_id IN 
+		(
+		SELECT order_id
+		FROM (
+			SELECT *, 
+					ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY review_id) as row_num, 
+                    COUNT(order_id) OVER (PARTITION BY order_id) as order_count
+			FROM order_reviews
+			) as sub_table
+		WHERE order_count > 1
+		)
+    ) as sub_table_2
+WHERE order_count_items > 1
+ORDER BY order_id
 ;
 
-SELECT *
-FROM order_items
+SELECT COUNT(DISTINCT order_id)
+FROM order_reviews
+;
+
+SELECT COUNT(*)
+FROM order_reviews
 ;
