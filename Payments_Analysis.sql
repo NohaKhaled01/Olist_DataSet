@@ -50,7 +50,7 @@ SELECT *,
 
 SELECT payment_combination, count(payment_combination)
 FROM (
-	SELECT group_concat(DISTINCT payment_type) as payment_combination
+	SELECT group_concat(DISTINCT payment_type) as payment_combination, order_id
 	FROM two_or_less
 	GROUP BY order_id
 	) as sub_table
@@ -59,13 +59,34 @@ GROUP BY payment_combination
 
 SELECT payment_combination, count(payment_combination)
 FROM (
-	SELECT group_concat(DISTINCT payment_type) as payment_combination
+	SELECT group_concat(DISTINCT payment_type) as payment_combination, order_id
 	FROM more_than_two
 	GROUP BY order_id
 	) as sub_table
 GROUP BY payment_combination
 ;
  
+ SELECT *
+ FROM more_than_two
+ ;
+ 
+# Creating views to import to PowerBI and connect to the rest of the tables:
+CREATE VIEW order_payment_comb_1 AS
+SELECT group_concat(DISTINCT payment_type) as payment_combination, order_id, order_count
+FROM two_or_less
+GROUP BY order_id
+;
+
+CREATE VIEW order_payment_comb_2 AS
+SELECT group_concat(DISTINCT payment_type) as payment_combination, order_id
+FROM more_than_two
+GROUP BY order_id
+;
+
+SELECT *
+FROM two_or_less
+;
+
 # Question: Does approval time change with payment type - plot in BI
 SELECT op.order_id, payment_type, order_purchase_timestamp, order_approved_at,
 	TIMESTAMPDIFF(DAY, order_purchase_timestamp, order_approved_at) as days_to_approval,
