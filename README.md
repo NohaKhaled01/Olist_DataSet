@@ -139,5 +139,7 @@ olist-ecommerce-analysis/
 
 Noha Khaled
 [GitHub Profile](https://github.com/NohaKhaled01)
+
 [Linked Profile](https://www.linkedin.com/in/nuha-khaled-mahmoud/)
+
 [Upwork Profile](https://www.upwork.com/freelancers/~011a02d544a2fd59bb?mp_source=share)
