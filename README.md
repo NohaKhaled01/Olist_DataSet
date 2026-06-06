@@ -28,20 +28,27 @@ The goal is to answer real business questions from raw data, while documenting t
 ```
 olist-ecommerce-analysis/
 │
-├── schema_no_fk.sql        ← Create tables without foreign key constraints (for initial data load)
-├── schema.sql              ← Full schema with foreign keys and constraints
-├── eda_notes.md            ← Exploratory data analysis notes — table profiles, findings, open questions
+├── sql                     ← Folder contains SQL files
+    ├── 01_schema                               ← Folder contains creating schema files
+    ├── 02_cleaning                             ← Folder contains cleaning data and solving discrepancies files
+    ├── 03_statisticalprofiles                  ← Folder contains exploratory profile files 
+    ├── 04_analysis                             ← Folder contains analysis files
+├── notes                   ← Folder contains note files creating during the the exploratory analysis
+    ├── Discrepancies to investigate.txt        ← Grouped discrepancies found
+    ├── eda_notes.md                            ← Exploratory notes
+├── notes-html              ← Folder contains the notes, in an organized notepad, open-able in browser
+    ├── olist_eda_notes_editable.html           ← eda_notes.md, organized, open-able in browser
+    ├── olist_statistical_notes_editable.html   ← notes from statistical analysis, organized, open-able in browser
 └── README.md
 ```
 
 ---
 
-## How to Reproduce
+## How to Reproduce DataSet
 
 1. Download the CSV files from the Kaggle link above
-2. Run `schema_no_fk.sql` to create the tables
-3. Import the CSV files into their respective tables
-4. Run `schema.sql` to add foreign key constraints after data is loaded and validated
+2. Run `Creating_Tables_WO_FK.sql` to create the tables
+3. Update `ImportingData_Into_Tables.sql`, update file paths, and run to import data into their respective tables
 
 ---
 
@@ -49,15 +56,14 @@ olist-ecommerce-analysis/
 
 **Database Design**
 - Relational schema design across 9 tables
-- Data type selection with justification (CHAR vs VARCHAR, DECIMAL vs FLOAT, TINYINT vs INT)
+- Data type selection (CHAR vs VARCHAR, DECIMAL vs FLOAT, TINYINT vs INT)
 - Primary key design including composite keys
 - Foreign key direction and dependency ordering
-- Distinction between structural and data quality constraints
 
 **SQL**
 - Multi-table joins across 4+ tables
 - CTEs (Common Table Expressions)
-- Window functions (ROW_NUMBER, COUNT OVER, LAG, RANK)
+- Window functions (ROW_NUMBER, COUNT OVER, LAG)
 - Subqueries and derived tables
 - Aggregate functions and distribution analysis
 - CASE WHEN for bucketing and conditional logic
@@ -77,7 +83,7 @@ olist-ecommerce-analysis/
 ## Key Findings (so far)
 
 **Payments**
-- The vast majority of split payments (payment_sequential > 1) are credit card + voucher combinations — intentional discount usage, not financial difficulty
+- All split payments (payment_sequential > 2) are credit card + voucher combinations — intentional discount usage, not financial difficulty
 - Approval time varies significantly by payment type — boleto payments take longer than credit card
 - A small number of orders used up to 29 sequential payments
 
@@ -87,7 +93,7 @@ olist-ecommerce-analysis/
 - Olist appears to pad delivery estimates deliberately — actual delivery consistently beats the estimate
 
 **Products & Categories**
-- 610 products have no category, name length, description length, or photo count — under investigation
+- 610 products have no category, name length, description length, or photo count
 - The same product_id can be sold by multiple sellers at different prices — price variation is largely seller-driven, not seasonal
 - A weak Q1 price dip pattern was observed across continuously purchased products — consistent across sellers, suggesting a market-level trend rather than individual seller behavior
 
