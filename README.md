@@ -48,7 +48,7 @@ olist-ecommerce-analysis/
 
 1. Download the CSV files from the Kaggle link above
 2. Run `Creating_Tables_WO_FK.sql` to create the tables
-3. Update `ImportingData_Into_Tables.sql`, update file paths, and run to import data into their respective tables
+3. Open `ImportingData_Into_Tables.sql`, update file paths, and run to import data into their respective tables
 
 ---
 
