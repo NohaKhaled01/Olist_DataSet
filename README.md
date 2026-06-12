@@ -80,30 +80,38 @@ olist-ecommerce-analysis/
 
 ---
 
-## Key Findings (so far)
+## Key Findings
 
+**Customers**
+- ~96.8% of customers ordered only once — repeat rate is approximately 3%
+- 3,345 customers placed more than one order
+- The low repeat rate reflects a one-time purchase through Olist, not a one-time product purchase, made evident by the overwhelmingly high review scores coupled with the low repeat rates. Customers could be re-buying products directly through sellers, or through other mediums
+- The dataset spans from Sept 2016 to Oct 2018, a period during which the platform was still growing. Later analyses for later time periods could reveal different findings
+
+**Reviews**
+- Multiple reviews per order are triggered by separate delivery events, not customer initiative — each shipped item triggers its own review request email
+- Review scores sometimes change between submissions for the same order, reflecting evolving customer sentiment
+- More than 50% of the orders have a 5-star review, pointing to low repeat rates that are not driven by the satisfactory levels
+- 
 **Payments**
 - All split payments (payment_sequential > 2) are credit card + voucher combinations — intentional discount usage, not financial difficulty
 - Approval time varies significantly by payment type — boleto payments take longer than credit card
 - A small number of orders used up to 29 sequential payments
+- Vast majority of credit card users opt for 1 to 3 installments for their payments, with less orders for higher installments
 
 **Orders & Delivery**
 - 775 orders exist in the payments table with no corresponding items — fully traced to canceled, unavailable, invoiced, created, and shipped-but-undelivered statuses
 - One delivered order has no payment record — identified as a data extraction anomaly
 - Olist appears to pad delivery estimates deliberately — actual delivery consistently beats the estimate
+- Delivery status strongly drives satisfaction levels, with late deliveries scoring low overall review scores versus early and on time deliveries
+- Knowing the number of items per order is not possible with the current data, as the number of items recording system was found inconsistent when compared to customers review messages
+- Follows from the inability to know the number of items per order, is the inability to analyze fright costs, as it is unclear whether the cost is calculated per item, per order, or per seller.
 
 **Products & Categories**
 - 610 products have no category, name length, description length, or photo count
 - The same product_id can be sold by multiple sellers at different prices — price variation is largely seller-driven, not seasonal
 - A weak Q1 price dip pattern was observed across continuously purchased products — consistent across sellers, suggesting a market-level trend rather than individual seller behavior
-
-**Customers**
-- ~96.8% of customers ordered only once — retention rate is approximately 3%
-- 3,345 customers placed more than one order
-
-**Reviews**
-- Multiple reviews per order are triggered by separate delivery events, not customer initiative — each shipped item triggers its own review request email
-- Review scores sometimes change between submissions for the same order, reflecting evolving customer sentiment
+- All product cateogries have very close overall review scores, pointing to a null relationship between categories and satisfaction levels
 
 ---
 
