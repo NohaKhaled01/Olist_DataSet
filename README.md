@@ -7,7 +7,6 @@ An end-to-end data analytics project built on the [Olist Brazilian E-Commerce pu
 ---
 
 ## Project Overview
-
 Olist is a Brazilian e-commerce marketplace that connects small retailers to major sales channels. This project analyzes their transactional data across 9 relational tables — covering orders, customers, sellers, products, payments, reviews, and geolocation — to uncover patterns in customer behavior, seller performance, delivery efficiency, and product demand.
 
 The goal is to answer real business questions from raw data, while documenting the full analytical process from schema design to visual reporting.
@@ -19,7 +18,7 @@ The goal is to answer real business questions from raw data, while documenting t
 - Dissatisfied customers write twice as much as satisfied customers
 - Late deliveries, despite taking up only 7% of the platform's deliveries, are a main drive for low review scores
 - Payments, when split, are split mainly for the usage of discount vouchers, not due to financial difficulties
-![Overview][images/01-overview.png]
+![alt text](01-overview.png)
 
 ## Dataset
 
