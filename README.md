@@ -18,7 +18,8 @@ The goal is to answer real business questions from raw data, while documenting t
 - Dissatisfied customers write twice as much as satisfied customers
 - Late deliveries, despite taking up only 7% of the platform's deliveries, are a main drive for low review scores
 - Payments, when split, are split mainly for the usage of discount vouchers, not due to financial difficulties
-![alt text](01-overview.png)
+
+![alt text](./images/01-overview.png)
 
 ## Dataset
 
@@ -46,6 +47,7 @@ olist-ecommerce-analysis/
     ├── olist_eda_notes_editable.html           ← eda_notes.md, organized, open-able in browser
     ├── olist_statistical_notes_editable.html   ← notes from statistical analysis, organized, open-able in browser
 ├── images                  ← Folder contains slide images from PowerBI report
+├── Olist_PowerBIReport.pdf                     ← PowerBI report as PDF
 └── README.md
 ```
 
@@ -93,28 +95,31 @@ olist-ecommerce-analysis/
 - ~96.8% of customers ordered only once — repeat rate is approximately 3%
 - 3,345 customers placed more than one order
 - The low repeat rate reflects a one-time purchase through Olist, not a one-time product purchase, made evident by the overwhelmingly high review scores coupled with the low repeat rates. Customers could be re-buying products directly through sellers, or through other mediums
-![Customers][images/02-customers.png]
+![alt text](./images/02-customers.png)
+
 
 **Reviews**
 - Multiple reviews per order are triggered by separate delivery events, not customer initiative — each shipped item triggers its own review request email
 - Review scores sometimes change between submissions for the same order, reflecting evolving customer sentiment
 - More than 50% of the orders have a 5-star review, pointing to low repeat rates that are not driven by the satisfactory levels
-![Reviews][images/03-reviews.png]
+![alt text](./images/04-reviews.png)
+
 
 **Payments**
 - All split payments (payment_sequential > 2) are credit card + voucher combinations — intentional discount usage, not financial difficulty
 - Approval time varies significantly by payment type — boleto payments take longer than credit card
 - A small number of orders used up to 29 sequential payments
 - Vast majority of credit card users opt for 1 to 3 installments for their payments, with less orders for higher installments
-![Payments][images/05-payments.png]
-![Payments][images/06-payments.png]
+![alt text](./images/05-payments.png)
+
 
 **Orders & Delivery**
 - 775 orders exist in the payments table with no corresponding items — fully traced to canceled, unavailable, invoiced, created, and shipped-but-undelivered statuses
 - One delivered order has no payment record — identified as a data extraction anomaly
 - Olist appears to pad delivery estimates deliberately — actual delivery consistently beats the estimate
 - Delivery status strongly drives satisfaction levels, with late deliveries scoring low overall review scores versus early and on time deliveries
-![Delivery][images/08-delivery&reviews.png]
+![alt text](./images/08-delivery&reviews.png)
+
 
 **Products & Categories**
 - 610 products have no category, name length, description length, or photo count

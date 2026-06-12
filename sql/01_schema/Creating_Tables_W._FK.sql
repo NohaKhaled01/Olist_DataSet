@@ -1,3 +1,5 @@
+CREATE SCHEMA olist ;
+
 SHOW TABLES ;
 
 CREATE TABLE translation(

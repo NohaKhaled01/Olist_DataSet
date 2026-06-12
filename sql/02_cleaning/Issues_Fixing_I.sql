@@ -3,12 +3,14 @@
 		# Order reviews - Orders
     # Products Table: Fix lenght in column names to length - Done
 
+# Checking column structures in tables:
 SELECT table_name, column_name, data_type, is_nullable
 FROM information_schema.columns
-WHERE table_schema = 'olist_db'
+WHERE table_schema = 'olist'
 ORDER BY table_name, ordinal_position
 ;
 
+# Backing up Order Items:
 CREATE TABLE order_items_backup AS
 	SELECT * FROM order_items;
 
@@ -20,10 +22,6 @@ FROM order_reviews
 ;
 
 DESCRIBE order_reviews ;
-
-SELECT review_creation_date, STR_TO_DATE(review_creation_date, '%m/%d/%Y %H:%i'), review_answer_timestamp, STR_TO_DATE(review_answer_timestamp, '%m/%d/%Y %H:%i')
-FROM order_reviews
-;
 
 UPDATE order_reviews
 SET review_creation_date = STR_TO_DATE(review_creation_date, '%m/%d/%Y %H:%i')
