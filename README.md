@@ -2,7 +2,7 @@
 
 An end-to-end data analytics project built on the [Olist Brazilian E-Commerce public dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) — covering database design, exploratory data analysis, and business insight generation.
 
-> **Status:** In progress — analysis ongoing. PowerBI report in development.
+> **Status:** Completed
 
 ---
 
@@ -126,20 +126,15 @@ olist-ecommerce-analysis/
 - Which categories have the highest and lowest review scores?
 - Customer retention rate and repeat purchase frequency
 - Seasonal price patterns for high-frequency products
-
-**In progress**
-- Review response time vs review score
+- Delivery time vs review score
 - Does unhappiness drive longer written reviews?
-- Late delivery patterns by region
-- Seller geographical distribution and order concentration
-- Delivery time vs seller/customer location distance
 
 ---
 
 ## Tools
 
 - **MySQL** — schema design, data loading, SQL analysis
-- **PowerBI** — visualization and reporting (in progress)
+- **PowerBI** — visualization and reporting
 
 ---
 
