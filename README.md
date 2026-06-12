@@ -14,6 +14,13 @@ The goal is to answer real business questions from raw data, while documenting t
 
 ---
 
+## Key Findings
+- Platform has a 3% customer repeat rate, despite more than 50% of orders having 5-stars review scores; satisfactory levels and repeat rates are not driving each other.
+- Dissatisfied customers write twice as much as satisfied customers
+- Late deliveries, despite taking up only 7% of the platform's deliveries, are a main drive for low review scores
+- Payments, when split, are split mainly for the usage of discount vouchers, not due to financial difficulties
+![Overview][images/01-overview.png]
+
 ## Dataset
 
 - **Source:** [Kaggle — Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
@@ -39,6 +46,7 @@ olist-ecommerce-analysis/
 ├── notes-html              ← Folder contains the notes, in an organized notepad, open-able in browser
     ├── olist_eda_notes_editable.html           ← eda_notes.md, organized, open-able in browser
     ├── olist_statistical_notes_editable.html   ← notes from statistical analysis, organized, open-able in browser
+├── images                  ← Folder contains slide images from PowerBI report
 └── README.md
 ```
 
@@ -86,26 +94,28 @@ olist-ecommerce-analysis/
 - ~96.8% of customers ordered only once — repeat rate is approximately 3%
 - 3,345 customers placed more than one order
 - The low repeat rate reflects a one-time purchase through Olist, not a one-time product purchase, made evident by the overwhelmingly high review scores coupled with the low repeat rates. Customers could be re-buying products directly through sellers, or through other mediums
-- The dataset spans from Sept 2016 to Oct 2018, a period during which the platform was still growing. Later analyses for later time periods could reveal different findings
+![Customers][images/02-customers.png]
 
 **Reviews**
 - Multiple reviews per order are triggered by separate delivery events, not customer initiative — each shipped item triggers its own review request email
 - Review scores sometimes change between submissions for the same order, reflecting evolving customer sentiment
 - More than 50% of the orders have a 5-star review, pointing to low repeat rates that are not driven by the satisfactory levels
-- 
+![Reviews][images/03-reviews.png]
+
 **Payments**
 - All split payments (payment_sequential > 2) are credit card + voucher combinations — intentional discount usage, not financial difficulty
 - Approval time varies significantly by payment type — boleto payments take longer than credit card
 - A small number of orders used up to 29 sequential payments
 - Vast majority of credit card users opt for 1 to 3 installments for their payments, with less orders for higher installments
+![Payments][images/05-payments.png]
+![Payments][images/06-payments.png]
 
 **Orders & Delivery**
 - 775 orders exist in the payments table with no corresponding items — fully traced to canceled, unavailable, invoiced, created, and shipped-but-undelivered statuses
 - One delivered order has no payment record — identified as a data extraction anomaly
 - Olist appears to pad delivery estimates deliberately — actual delivery consistently beats the estimate
 - Delivery status strongly drives satisfaction levels, with late deliveries scoring low overall review scores versus early and on time deliveries
-- Knowing the number of items per order is not possible with the current data, as the number of items recording system was found inconsistent when compared to customers review messages
-- Follows from the inability to know the number of items per order, is the inability to analyze fright costs, as it is unclear whether the cost is calculated per item, per order, or per seller.
+![Delivery][images/08-delivery&reviews.png]
 
 **Products & Categories**
 - 610 products have no category, name length, description length, or photo count
@@ -114,6 +124,15 @@ olist-ecommerce-analysis/
 - All product cateogries have very close overall review scores, pointing to a null relationship between categories and satisfaction levels
 
 ---
+
+## Data Limitations
+- The numbers computed in this project are for a beginner growing platform:
+Olist was founded in 2015. The dataset spans from Sept 2016 to Oct 2018, a period during which the platform was still growing. Later analyses for later time periods could reveal different findings
+- The current dataset does not keep an accurate record of the number of items per order, and doesnt provide a way to calculate delivery costs:
+Several order items records were compared to the reviews comments for the same orders, and it was found that multiple orders recorded as having one item actually had multiple items based on the review comment.
+Furthermore, a freight cost is added for each item in the records, and if the number of items is not presented accurately, it follows that the total freight cost per order can't be calculated based on the data given alone.
+- Whether the platform pads its estimated delivery times or not is not determinable:
+Early and on time deliveries are computed based on the platform's estimated delivery times, and the platform could be giving itself a large margin of error to get the early delivery badge, while keeping actual delivery times too long.
 
 ## Analysis Questions
 
